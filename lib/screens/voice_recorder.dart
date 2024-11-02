@@ -128,8 +128,12 @@ class VoiceRecorderScreenState extends State<VoiceRecorderScreen> {
     });
   }
 
-   getWaves() async{
-    return await playerController?.extractWaveformData(path: _recordingPath!);
+   getWaves() {
+    List<double> waves = [];
+    playerController?.extractWaveformData(path: _recordingPath!).then((value) {
+      waves = value;
+    });
+    return waves;
   }
 
   @override
@@ -187,7 +191,7 @@ class VoiceRecorderScreenState extends State<VoiceRecorderScreen> {
                           child: AudioFileWaveforms(
                             size: const Size(double.infinity, 100),
                             playerController: playerController!,
-                            waveformType: WaveformType.long,
+                            waveformType: WaveformType.fitWidth,
                             enableSeekGesture: true,
                             waveformData: getWaves(),
                             playerWaveStyle: const PlayerWaveStyle(
@@ -196,9 +200,9 @@ class VoiceRecorderScreenState extends State<VoiceRecorderScreen> {
                               showSeekLine: true,
                               seekLineColor: Colors.green,
                               seekLineThickness: 2,
-                              waveThickness: 3,
-                              spacing: 5,
-                              scaleFactor: 300,
+                              waveThickness: 1,
+                              spacing: 1.5,
+                              scaleFactor: 1000,
                             ),
                           ),
                         ),
