@@ -191,7 +191,7 @@ class VoiceRecorderScreenState extends State<VoiceRecorderScreen> {
                           child: AudioFileWaveforms(
                             size: const Size(double.infinity, 100),
                             playerController: playerController!,
-                            waveformType: WaveformType.fitWidth,
+                            waveformType: WaveformType.long,
                             enableSeekGesture: true,
                             waveformData: getWaves(),
                             playerWaveStyle: const PlayerWaveStyle(
