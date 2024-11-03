@@ -1,10 +1,12 @@
 import 'package:components_test/screens/calendar_screen.dart';
 import 'package:components_test/screens/emoji_selection_screen.dart';
 import 'package:components_test/screens/gif_screen.dart';
+import 'package:components_test/screens/gif_screen_two.dart';
 import 'package:components_test/screens/hidden_header_screen.dart';
 import 'package:components_test/screens/image_editing.dart';
 import 'package:components_test/screens/image_editor_screen.dart';
 import 'package:components_test/screens/image_swiper_screen.dart';
+import 'package:components_test/screens/sticker_screen.dart';
 import 'package:components_test/screens/timeline_chat_screen.dart';
 import 'package:components_test/screens/voice_recorder.dart';
 import 'package:flutter/material.dart';
@@ -120,6 +122,26 @@ class AppDrawer extends StatelessWidget {
               );
             },
           ),
+          const SizedBox(height: 10,),
+          ListTile(
+            title: const Text('Sticker screen'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  const StickerScreen()),
+              );
+            },
+          ),
+          // const SizedBox(height: 10,),
+          // ListTile(
+          //   title: const Text('Gif screen two'),
+          //   onTap: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) =>  const GifScreenTwo()),
+          //     );
+          //   },
+          // ),
         ],
       ),
     );
