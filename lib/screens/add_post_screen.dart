@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({super.key});
@@ -17,9 +20,10 @@ class AddPostScreenState extends State<AddPostScreen> {
   final TextEditingController thoughtsController = TextEditingController(
       text: "In the next days I’ll be doing something great with you all guys...");
 
-  bool isExpandedTags = true;
-  bool isExpandedMedia = true;
-  bool isExpandedAudio = true;
+  bool isExpandedTags = false;
+  bool isExpandedLocation = false;
+  bool isExpandedMedia = false;
+  bool isExpandedAudio = false;
   bool isMultipleSelectEnabled = false;
 
   final ImagePicker _picker = ImagePicker();
@@ -142,6 +146,56 @@ class AddPostScreenState extends State<AddPostScreen> {
       },
     );
   }
+  String _locationMessage = "Press the button to get location";
+  final TextEditingController _searchController = TextEditingController();
+  List<dynamic> _suggestions = [];
+
+  Future<void> _getLocationSuggestions(String input) async {
+    final String url =
+        'https://nominatim.openstreetmap.org/search?q=$input&format=json&addressdetails=1&limit=5';
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        setState(() {
+          _suggestions = json.decode(response.body);
+        });
+      }
+    } catch (e) {
+      print("Error fetching location suggestions: $e");
+    }
+  }
+  Future<void> _getCurrentLocation() async {
+    // Check if location services are enabled
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Request user to enable location services
+      await Geolocator.openLocationSettings();
+      return;
+    }
+
+    // Check and request location permission
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        setState(() {
+          _locationMessage = "Location permissions are denied";
+        });
+        return;
+      }
+    }
+
+    // Fetch the current location
+    Position position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ));
+
+    setState(() {
+      _locationMessage =
+      "Latitude: ${position.latitude}, Longitude: ${position.longitude}";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,6 +220,8 @@ class AddPostScreenState extends State<AddPostScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // _buildLocationSection(),
+                  // const SizedBox(height: 16),
                   const ListTile(
                     leading: CircleAvatar(radius: 30,),
                     title: Text("first name"),
@@ -195,7 +251,71 @@ class AddPostScreenState extends State<AddPostScreen> {
       ),
     );
   }
-
+  Widget _buildLocationSection() {
+    return ExpansionTile(
+      title: const Text('Location:'),
+      initiallyExpanded: isExpandedLocation,
+      onExpansionChanged: (expanded) => setState(() => isExpandedLocation = expanded),
+      children: [
+       Column(
+         children: [
+           Text(_locationMessage),
+           const SizedBox(height: 20),
+           ElevatedButton(
+             onPressed: _getCurrentLocation,
+             child: const Text("Get Current Location"),
+           ),
+           Padding(
+             padding: const EdgeInsets.all(16.0),
+             child: Column(
+               children: [
+                 TextField(
+                   controller: _searchController,
+                   decoration: const InputDecoration(
+                     labelText: "Search Location",
+                     border: InputBorder.none,
+                   ),
+                   onChanged: (input) {
+                     if (input.isNotEmpty) {
+                       _getLocationSuggestions(input);
+                     } else {
+                       setState(() {
+                         _suggestions.clear();
+                       });
+                     }
+                   },
+                 ),
+                 const SizedBox(height: 10),
+                 if(_suggestions.isNotEmpty)
+                   SizedBox(
+                     height: 200,
+                     child: ListView.builder(
+                       itemCount: _suggestions.length,
+                       shrinkWrap: true,
+                       itemBuilder: (context, index) {
+                         final suggestion = _suggestions[index];
+                         final displayName = suggestion['display_name'];
+                         return ListTile(
+                           title: Text(displayName ?? ""),
+                           onTap: () {
+                             print("Selected Location: ${suggestion['lat']}, ${suggestion['lon']}");
+                             setState(() {
+                               _searchController.text = displayName ?? "";
+                               _suggestions.clear();
+                             });
+                           },
+                         );
+                       },
+                     ),
+                   ),
+               ],
+             ),
+           ),
+         ],
+       )
+      ],
+    );
+  }
   Widget _buildTagsSection() {
     return ExpansionTile(
       title: Text('Tagged: ${taggedPeople.length}'),

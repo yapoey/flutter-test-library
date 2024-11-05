@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -27,13 +29,6 @@ class VoiceRecorderScreenState extends State<VoiceRecorderScreen> {
   final List<double> _playbackSpeeds = [1.0, 1.5, 2.0];
   int _currentSpeedIndex = 0;
 
-  void _changePlaybackSpeed() {
-    setState(() {
-      _currentSpeedIndex = (_currentSpeedIndex + 1) % _playbackSpeeds.length;
-      _audioPlayer.setPlaybackRate(_playbackSpeeds[_currentSpeedIndex]);
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -57,7 +52,6 @@ class VoiceRecorderScreenState extends State<VoiceRecorderScreen> {
       _recordingPath = '${dir.path}/recording.aac';
 
       await _recorder!.startRecorder(toFile: _recordingPath);
-
       setState(() {
         _isRecording = true;
       });
@@ -74,8 +68,30 @@ class VoiceRecorderScreenState extends State<VoiceRecorderScreen> {
       });
 
       if (_recordingPath != null) {
+        await _applyNoiseReduction(); // Apply noise reduction here
         await playerController!.preparePlayer(path: _recordingPath!);
         _totalDuration = await _audioPlayer.getDuration() ?? Duration.zero;
+      }
+    }
+  }
+
+  Future<void> _applyNoiseReduction() async {
+    if (_recordingPath != null) {
+      String outputPath = '${(await getApplicationDocumentsDirectory()).path}/cleaned_recording.aac';
+
+      // Example command to apply noise reduction
+      String command = '-i $_recordingPath -af afftdn $outputPath';
+
+      // Execute the FFmpeg command
+      final session = await FFmpegKit.execute(command);
+
+      // Check the return status
+      final returnCode = await session.getReturnCode();
+      if (ReturnCode.isSuccess(returnCode)) {
+        print("Noise reduction completed successfully!");
+        _recordingPath = outputPath; // Update recording path to the cleaned file
+      } else {
+        print("Error during noise reduction: $returnCode");
       }
     }
   }
@@ -116,6 +132,13 @@ class VoiceRecorderScreenState extends State<VoiceRecorderScreen> {
     });
   }
 
+  Future<void> _changePlaybackSpeed() async {
+    _currentSpeedIndex = (_currentSpeedIndex + 1) % _playbackSpeeds.length;
+    final speed = _playbackSpeeds[_currentSpeedIndex];
+    await _audioPlayer.setPlaybackRate(speed);
+    setState(() {});
+  }
+
   void _seekToPosition(Offset localPosition, Size waveformSize) {
     if (_totalDuration == Duration.zero) return;
     double percentage = localPosition.dx / waveformSize.width;
@@ -128,7 +151,7 @@ class VoiceRecorderScreenState extends State<VoiceRecorderScreen> {
     });
   }
 
-   getWaves() {
+  getWaves() {
     List<double> waves = [];
     playerController?.extractWaveformData(path: _recordingPath!).then((value) {
       waves = value;
@@ -191,7 +214,7 @@ class VoiceRecorderScreenState extends State<VoiceRecorderScreen> {
                           child: AudioFileWaveforms(
                             size: const Size(double.infinity, 100),
                             playerController: playerController!,
-                            waveformType: WaveformType.long,
+                            waveformType: WaveformType.fitWidth,
                             enableSeekGesture: true,
                             waveformData: getWaves(),
                             playerWaveStyle: const PlayerWaveStyle(

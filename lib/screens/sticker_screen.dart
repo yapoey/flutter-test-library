@@ -324,14 +324,16 @@ class StickerScreenState extends State<StickerScreen> {
                   decoration: InputDecoration(labelText: 'Type a message...'),
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () {
-                  setState(() {
-                    addCustomSticker();
-                  });
-                },
-              ),
+              if (isStickerSelectorVisible)
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    setState(() {
+                      addCustomSticker();
+                    });
+                  },
+                ),
+
             ],
           ),
         ],

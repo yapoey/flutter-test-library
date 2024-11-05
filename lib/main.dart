@@ -1,7 +1,10 @@
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit_config.dart';
 import 'package:flutter/material.dart';
 import 'drawer.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await FFmpegKitConfig.init();
   runApp(MyApp());
 }
 
