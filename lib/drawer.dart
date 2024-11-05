@@ -1,7 +1,7 @@
+import 'package:components_test/screens/add_post_screen.dart';
 import 'package:components_test/screens/calendar_screen.dart';
 import 'package:components_test/screens/emoji_selection_screen.dart';
 import 'package:components_test/screens/gif_screen.dart';
-import 'package:components_test/screens/gif_screen_two.dart';
 import 'package:components_test/screens/hidden_header_screen.dart';
 import 'package:components_test/screens/image_editing.dart';
 import 'package:components_test/screens/image_editor_screen.dart';
@@ -104,16 +104,6 @@ class AppDrawer extends StatelessWidget {
           ),
           const SizedBox(height: 10,),
           ListTile(
-            title: const Text('Image editing screen'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) =>  const ImageEditingScreen()),
-              );
-            },
-          ),
-          const SizedBox(height: 10,),
-          ListTile(
             title: const Text('Gif screen'),
             onTap: () {
               Navigator.push(
@@ -132,16 +122,16 @@ class AppDrawer extends StatelessWidget {
               );
             },
           ),
-          // const SizedBox(height: 10,),
-          // ListTile(
-          //   title: const Text('Gif screen two'),
-          //   onTap: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (context) =>  const GifScreenTwo()),
-          //     );
-          //   },
-          // ),
+          const SizedBox(height: 10,),
+          ListTile(
+            title: const Text('Add post screen'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  const AddPostScreen()),
+              );
+            },
+          ),
         ],
       ),
     );

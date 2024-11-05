@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-class HideHeaderExample extends StatefulWidget {
+import 'calendar_screen.dart';
 
+class HideHeaderExample extends StatefulWidget {
   const HideHeaderExample({super.key});
 
   @override
@@ -11,8 +12,8 @@ class HideHeaderExample extends StatefulWidget {
 
 class _HideHeaderExampleState extends State<HideHeaderExample> {
   final ScrollController _scrollController = ScrollController();
-  bool? isHeaderVisible;
-  bool? isLatestVisible;
+  bool areHeadersVisible = false;
+
   @override
   void initState() {
     super.initState();
@@ -25,23 +26,37 @@ class _HideHeaderExampleState extends State<HideHeaderExample> {
     _scrollController.dispose();
     super.dispose();
   }
+
   void _toggleHeaderVisibility() {
-    double maxScrollExtent = _scrollController.position.maxScrollExtent;
-    double middlePosition = maxScrollExtent / 2;
     if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
-      if ((_scrollController.offset >= middlePosition - 10 && _scrollController.offset <= middlePosition + 10) && (isHeaderVisible ?? true)) {
+      // Scrolling up - show headers
+      if (!areHeadersVisible) {
         setState(() {
-          isHeaderVisible = false;
-          isLatestVisible = false;
+          areHeadersVisible = true;
         });
       }
     } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
-      if (!(isHeaderVisible ?? true) && (_scrollController.offset >= middlePosition - 10 && _scrollController.offset <= middlePosition + 10)) {
+      // Scrolling down - hide headers
+      if (areHeadersVisible) {
         setState(() {
-          isLatestVisible = true;
+          areHeadersVisible = false;
         });
       }
     }
+  }
+  void _showFullScreenDatePicker() async {
+    DateTime? selectedDate = await showDialog<DateTime>(
+      context: context,
+      builder: (_) => const FullScreenDatePicker(),
+    );
+
+    if (selectedDate != null) {
+      _scrollController.jumpTo(0);
+    }
+  }
+
+  void _goToTop() {
+    _scrollController.jumpTo(0);
   }
 
   @override
@@ -51,7 +66,7 @@ class _HideHeaderExampleState extends State<HideHeaderExample> {
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
-           const SliverAppBar(
+          const SliverAppBar(
             backgroundColor: Colors.orange,
             expandedHeight: 100.0,
             floating: false,
@@ -60,34 +75,93 @@ class _HideHeaderExampleState extends State<HideHeaderExample> {
               title: Text("Timeline"),
             ),
           ),
-            SliverAppBar(
-            backgroundColor: Colors.blue,
-            expandedHeight: 100.0,
-            floating: false,
-            pinned: isHeaderVisible ?? true,
-            flexibleSpace: const FlexibleSpaceBar(
-              title: Text("Add post"),
-            ),
-          ),
-           SliverAppBar(
-             elevation: 0,
+          // Third SliverAppBar - "Latest" button with expandable menu
+          SliverAppBar(
+            elevation: 0,
             shadowColor: Colors.transparent,
             foregroundColor: Colors.transparent,
             surfaceTintColor: Colors.transparent,
             backgroundColor: Colors.transparent,
-            expandedHeight: 50.0,
+            expandedHeight: 100.0,
             floating: true,
-            pinned: isLatestVisible ?? true,
+            pinned: false,
             flexibleSpace: FlexibleSpaceBar(
-                centerTitle:true,
-              title: ElevatedButton(onPressed: (){
-                _scrollController.jumpTo(0);
-              }, child: const Text("Latest")),
+              centerTitle: true,
+              background: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        const CircleAvatar(radius: 30),
+                        IconButton(onPressed: () {}, icon: const Icon(Icons.add, size: 24)),
+                        const Text("New post"),
+                        const SizedBox(width: 10),
+                        Container(
+                          width: 1,
+                          height: 30,
+                          color: Colors.grey,
+                        ),
+                        IconButton(onPressed: () {}, icon: const Icon(Icons.add, size: 24)),
+                        const Text("New event"),
+                      ],
+                    ),
+                    PopupMenuButton<String>(
+                      position: PopupMenuPosition.under,
+                      color: Colors.white,
+                      onSelected: (value) {
+                        if (value == 'goToTop') {
+                          _goToTop();
+                        } else if (value == 'selectDate') {
+                          _showFullScreenDatePicker();
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem(
+                          value: 'goToTop',
+                          child: Row(
+                            children: [
+                              Icon(Icons.arrow_upward),
+                              Text("Go to Top"),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'selectDate',
+                          child: Row(
+                            children: [
+                              Icon(Icons.calendar_today),
+                              Text("Select Date"),
+                            ],
+                          ),
+                        ),
+                      ],
+                      child: OutlinedButton.icon(
+                        onPressed: null, // Expandable menu opens on button tap
+                        icon: const Text(
+                          "Latest",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        label: const Icon(Icons.arrow_drop_down, color: Colors.black),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Colors.grey.shade300),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
+          // List of posts
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (context, index) => ListTile(
+                  (context, index) => ListTile(
                 title: Text("Post #$index"),
               ),
               childCount: 50,
