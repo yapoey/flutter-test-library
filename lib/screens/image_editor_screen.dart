@@ -100,25 +100,27 @@ class ImageEditorScreenState extends State<ImageEditorScreen> {
         ],
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Display the original or edited image
-            _editedImageFile != null
-                ? Image.file(_editedImageFile!)
-                : _imageFile != null
-                ? Image.file(File(_imageFile!.path))
-                : const Text('No image selected.'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: const Text('Pick Image'),
-            ),
-            ElevatedButton(
-              onPressed: _editImage,
-              child: const Text('Edit Image'),
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Display the original or edited image
+              _editedImageFile != null
+                  ? Image.file(_editedImageFile!)
+                  : _imageFile != null
+                  ? Image.file(File(_imageFile!.path))
+                  : const Text('No image selected.'),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: const Text('Pick Image'),
+              ),
+              ElevatedButton(
+                onPressed: _editImage,
+                child: const Text('Edit Image'),
+              ),
+            ],
+          ),
         ),
       ),
     );

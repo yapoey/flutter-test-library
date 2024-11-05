@@ -215,7 +215,7 @@ class AddPostScreenState extends State<AddPostScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
+              // physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

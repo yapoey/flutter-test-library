@@ -225,7 +225,7 @@ class VoiceRecorderScreenState extends State<VoiceRecorderScreen> {
                               seekLineThickness: 2,
                               waveThickness: 1,
                               spacing: 1.5,
-                              scaleFactor: 1000,
+                              scaleFactor: 400,
                             ),
                           ),
                         ),

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -11,9 +12,10 @@ class ImageSwiperScreen extends StatefulWidget {
 
 class ImageSwiperScreenState extends State<ImageSwiperScreen> {
   final List<String> imageUrls = [
-    'https://via.placeholder.com/400x200.png?text=Image+1',
-    'https://via.placeholder.com/400x200.png?text=Image+2',
-    'https://via.placeholder.com/400x200.png?text=Image+3',
+    "assets/image.png",
+    "assets/image.png",
+    "assets/image.png",
+    "assets/image.png",
   ];
 
   int activePostIndex = -1; // Index of the post currently showing arrows
@@ -120,9 +122,9 @@ class PostWidgetState extends State<PostWidget> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               children: [
-                const CircleAvatar(
-                  backgroundImage:
-                      NetworkImage('https://via.placeholder.com/50.png'),
+                CircleAvatar(
+                  child:
+                      Image.asset("assets/image.png",fit: BoxFit.fill,)
                 ),
                 const SizedBox(width: 8),
                 const Text(
@@ -154,8 +156,8 @@ class PostWidgetState extends State<PostWidget> {
               CarouselSlider.builder(
                 itemCount: widget.imageUrls.length,
                 itemBuilder: (context, itemIndex, pageViewIndex) {
-                  return Image.network(widget.imageUrls[itemIndex],
-                      fit: BoxFit.cover);
+                  return Image.asset(widget.imageUrls[itemIndex],
+                    fit: BoxFit.cover,);
                 },
                 options: CarouselOptions(
                   viewportFraction: 1.0,
