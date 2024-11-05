@@ -175,7 +175,7 @@ class PostWidgetState extends State<PostWidget> {
                   top: 0,
                   bottom: 0,
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                    icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
                     onPressed: () {
                       setState(() {
                         currentIndex =
@@ -192,7 +192,7 @@ class PostWidgetState extends State<PostWidget> {
                   bottom: 0,
                   child: IconButton(
                     icon: const Icon(Icons.arrow_forward_ios,
-                        color: Colors.white),
+                        color: Colors.black),
                     onPressed: () {
                       setState(() {
                         currentIndex =
