@@ -21,17 +21,14 @@ class ImageEditorScreenState extends State<ImageEditorScreen> {
     if (pickedFile != null) {
       setState(() {
         _imageFile = pickedFile;
-        _editedImageFile = null; // Reset edited image when a new image is picked
+        _editedImageFile = null;
       });
     }
   }
 
   Future<void> _editImage() async {
     if (_imageFile == null && _editedImageFile == null) return;
-
-    // Use the latest edited image, or the original image if no edits are made yet
     final imageToEdit = _editedImageFile ?? File(_imageFile!.path);
-
     final editedImage = await Navigator.of(context).push<File?>(
       MaterialPageRoute(
         builder: (context) => ProImageEditor.file(
@@ -41,14 +38,13 @@ class ImageEditorScreenState extends State<ImageEditorScreen> {
               final editedFile = File('${_imageFile!.path}_edited.png');
               editedFile.writeAsBytesSync(edited);
               setState(() {
-                // Update both _imageFile and _editedImageFile to keep track of the latest edit
-                _imageFile = XFile(editedFile.path); // Update the source image
+                _imageFile = XFile(editedFile.path);
                 _editedImageFile = editedFile;
               });
               return Future<void>(() => editedFile);
             },
             onCloseEditor: () {
-              Navigator.of(context).pop(); // Handle cancel action
+              Navigator.of(context).pop();
             },
           ),
         ),
@@ -57,7 +53,7 @@ class ImageEditorScreenState extends State<ImageEditorScreen> {
 
     if (editedImage != null) {
       setState(() {
-        _imageFile = XFile(editedImage.path); // Update the source image
+        _imageFile = XFile(editedImage.path);
         _editedImageFile = editedImage;
       });
     }
@@ -73,7 +69,6 @@ class ImageEditorScreenState extends State<ImageEditorScreen> {
     );
   }
 
-  // Clear image selection
   void _deleteImage() {
     setState(() {
       _imageFile = null;
@@ -104,7 +99,6 @@ class ImageEditorScreenState extends State<ImageEditorScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Display the original or edited image
               _editedImageFile != null
                   ? Image.file(_editedImageFile!)
                   : _imageFile != null
