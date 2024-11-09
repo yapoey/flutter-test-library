@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import '../widgets/custom_calendar.dart';
 
-import 'calendar_screen.dart';
-
-class HideHeaderExample extends StatefulWidget {
-  const HideHeaderExample({super.key});
+class HideHeaderScreen extends StatefulWidget {
+  const HideHeaderScreen({super.key});
 
   @override
-  State<HideHeaderExample> createState() => _HideHeaderExampleState();
+  State<HideHeaderScreen> createState() => _HideHeaderScreenState();
 }
 
-class _HideHeaderExampleState extends State<HideHeaderExample> {
+class _HideHeaderScreenState extends State<HideHeaderScreen> {
   final ScrollController _scrollController = ScrollController();
   bool areHeadersVisible = false;
 
@@ -45,10 +44,7 @@ class _HideHeaderExampleState extends State<HideHeaderExample> {
     }
   }
   void _showFullScreenDatePicker() async {
-    DateTime? selectedDate = await showDialog<DateTime>(
-      context: context,
-      builder: (_) => const FullScreenDatePicker(),
-    );
+    DateTime? selectedDate =  await showCustomCalendar(context: context);
 
     if (selectedDate != null) {
       _scrollController.jumpTo(0);
@@ -75,7 +71,6 @@ class _HideHeaderExampleState extends State<HideHeaderExample> {
               title: Text("Timeline"),
             ),
           ),
-          // Third SliverAppBar - "Latest" button with expandable menu
           SliverAppBar(
             elevation: 0,
             shadowColor: Colors.transparent,
@@ -158,7 +153,6 @@ class _HideHeaderExampleState extends State<HideHeaderExample> {
               ),
             ),
           ),
-          // List of posts
           SliverList(
             delegate: SliverChildBuilderDelegate(
                   (context, index) => ListTile(

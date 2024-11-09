@@ -21,7 +21,6 @@ class ImageSwiperScreenState extends State<ImageSwiperScreen> {
   int activePostIndex = -1; // Index of the post currently showing arrows
 
   void updateActivePost(int index) {
-    // Update only if a different post needs to be active
     if (index != activePostIndex) {
       setState(() {
         activePostIndex = index;
@@ -45,7 +44,7 @@ class ImageSwiperScreenState extends State<ImageSwiperScreen> {
               postId: index.toString(),
               isActive: activePostIndex == index,
               onVisibilityChanged: (visibleFraction) {
-                if (visibleFraction > 0.5) {
+                if (visibleFraction > 0.85) {
                   updateActivePost(index);
                 }
               },

@@ -5,13 +5,13 @@ import 'package:image_cropper/image_cropper.dart';
 class EditStickerScreen extends StatefulWidget {
   final String stickerPath;
 
-  const EditStickerScreen({Key? key, required this.stickerPath}) : super(key: key);
+  const EditStickerScreen({super.key, required this.stickerPath});
 
   @override
-  _EditStickerScreenState createState() => _EditStickerScreenState();
+  EditStickerScreenState createState() => EditStickerScreenState();
 }
 
-class _EditStickerScreenState extends State<EditStickerScreen> {
+class EditStickerScreenState extends State<EditStickerScreen> {
   File? _croppedFile;
 
   Future<void> _cropImage() async {
@@ -47,7 +47,7 @@ class _EditStickerScreenState extends State<EditStickerScreen> {
   @override
   void initState() {
     super.initState();
-    _cropImage(); // Start cropping on screen load
+    _cropImage();
   }
 
   @override

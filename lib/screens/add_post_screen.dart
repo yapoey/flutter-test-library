@@ -30,15 +30,12 @@ class AddPostScreenState extends State<AddPostScreen> {
 
   Future<void> _pickImagesAndVideos() async {
     final pickedFiles = await _picker.pickMultiImage();
-    if (pickedFiles != null) {
       setState(() {
         media.addAll(pickedFiles.map((pickedFile) => pickedFile.path));
       });
-    }
   }
 
   void _showAudioFilePicker() async {
-    // Simulate audio files data for testing
     List<Map<String, String>> audioFileList = List.generate(
       10,
           (index) => {
@@ -48,10 +45,7 @@ class AddPostScreenState extends State<AddPostScreen> {
         "date": "23 Oct, 2025"
       },
     );
-
-    // Create a local selection state
     List<String> localSelectedAudioFiles = List.from(selectedAudioFiles);
-
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -70,7 +64,7 @@ class AddPostScreenState extends State<AddPostScreen> {
                           setState(() {
                             isMultipleSelectEnabled = !isMultipleSelectEnabled;
                             if (!isMultipleSelectEnabled) {
-                              localSelectedAudioFiles.clear(); // Clear selections when toggling off
+                              localSelectedAudioFiles.clear();
                             }
                           });
                         },
@@ -113,12 +107,10 @@ class AddPostScreenState extends State<AddPostScreen> {
                                 }
                               });
                             } else {
-                              // Add selected file in single select mode
                               setState(() {
                                 audioFiles.add(file["name"]!);
                               });
                               Navigator.pop(context);
-                              // Update main state after adding single file
                               this.setState(() {});
                             }
                           },
@@ -130,10 +122,9 @@ class AddPostScreenState extends State<AddPostScreen> {
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        // Update main state after confirming multiple selection
                         this.setState(() {
                           audioFiles.addAll(localSelectedAudioFiles);
-                          audioFiles = audioFiles.toSet().toList(); // Remove duplicates if needed
+                          audioFiles = audioFiles.toSet().toList();
                         });
                       },
                       child: const Text("Confirm"),
@@ -146,62 +137,14 @@ class AddPostScreenState extends State<AddPostScreen> {
       },
     );
   }
-  String _locationMessage = "Press the button to get location";
-  final TextEditingController _searchController = TextEditingController();
-  List<dynamic> _suggestions = [];
-
-  Future<void> _getLocationSuggestions(String input) async {
-    final String url =
-        'https://nominatim.openstreetmap.org/search?q=$input&format=json&addressdetails=1&limit=5';
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        setState(() {
-          _suggestions = json.decode(response.body);
-        });
-      }
-    } catch (e) {
-      print("Error fetching location suggestions: $e");
-    }
-  }
-  Future<void> _getCurrentLocation() async {
-    // Check if location services are enabled
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Request user to enable location services
-      await Geolocator.openLocationSettings();
-      return;
-    }
-
-    // Check and request location permission
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        setState(() {
-          _locationMessage = "Location permissions are denied";
-        });
-        return;
-      }
-    }
-
-    // Fetch the current location
-    Position position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-        ));
-
-    setState(() {
-      _locationMessage =
-      "Latitude: ${position.latitude}, Longitude: ${position.longitude}";
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('New Post'),
+        backgroundColor: Colors.white,
         actions: [
           TextButton(
             onPressed: () {
@@ -215,13 +158,10 @@ class AddPostScreenState extends State<AddPostScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              // physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // _buildLocationSection(),
-                  // const SizedBox(height: 16),
                   const ListTile(
                     leading: CircleAvatar(radius: 30,),
                     title: Text("first name"),
@@ -249,71 +189,6 @@ class AddPostScreenState extends State<AddPostScreen> {
           )
         ],
       ),
-    );
-  }
-  Widget _buildLocationSection() {
-    return ExpansionTile(
-      title: const Text('Location:'),
-      initiallyExpanded: isExpandedLocation,
-      onExpansionChanged: (expanded) => setState(() => isExpandedLocation = expanded),
-      children: [
-       Column(
-         children: [
-           Text(_locationMessage),
-           const SizedBox(height: 20),
-           ElevatedButton(
-             onPressed: _getCurrentLocation,
-             child: const Text("Get Current Location"),
-           ),
-           Padding(
-             padding: const EdgeInsets.all(16.0),
-             child: Column(
-               children: [
-                 TextField(
-                   controller: _searchController,
-                   decoration: const InputDecoration(
-                     labelText: "Search Location",
-                     border: InputBorder.none,
-                   ),
-                   onChanged: (input) {
-                     if (input.isNotEmpty) {
-                       _getLocationSuggestions(input);
-                     } else {
-                       setState(() {
-                         _suggestions.clear();
-                       });
-                     }
-                   },
-                 ),
-                 const SizedBox(height: 10),
-                 if(_suggestions.isNotEmpty)
-                   SizedBox(
-                     height: 200,
-                     child: ListView.builder(
-                       itemCount: _suggestions.length,
-                       shrinkWrap: true,
-                       itemBuilder: (context, index) {
-                         final suggestion = _suggestions[index];
-                         final displayName = suggestion['display_name'];
-                         return ListTile(
-                           title: Text(displayName ?? ""),
-                           onTap: () {
-                             print("Selected Location: ${suggestion['lat']}, ${suggestion['lon']}");
-                             setState(() {
-                               _searchController.text = displayName ?? "";
-                               _suggestions.clear();
-                             });
-                           },
-                         );
-                       },
-                     ),
-                   ),
-               ],
-             ),
-           ),
-         ],
-       )
-      ],
     );
   }
   Widget _buildTagsSection() {

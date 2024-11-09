@@ -18,14 +18,12 @@ class _TimelineChatScreenState extends State<TimelineChatScreen> {
     super.initState();
     _scrollController.addListener(_toggleHeaderVisibility);
   }
-
   @override
   void dispose() {
     _scrollController.removeListener(_toggleHeaderVisibility);
     _scrollController.dispose();
     super.dispose();
   }
-
   List<String> chatTypes = ["Contacts", "Groups", "Communications"];
   String selectedType = "Contacts";
   String mainTitle = "Chats";

@@ -3,7 +3,6 @@ import 'package:components_test/screens/calendar_screen.dart';
 import 'package:components_test/screens/emoji_selection_screen.dart';
 import 'package:components_test/screens/gif_screen.dart';
 import 'package:components_test/screens/hidden_header_screen.dart';
-import 'package:components_test/screens/image_editing.dart';
 import 'package:components_test/screens/image_editor_screen.dart';
 import 'package:components_test/screens/image_swiper_screen.dart';
 import 'package:components_test/screens/sticker_screen.dart';
@@ -58,7 +57,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const HideHeaderExample()),
+                MaterialPageRoute(builder: (context) => const HideHeaderScreen()),
               );
             },
           ),

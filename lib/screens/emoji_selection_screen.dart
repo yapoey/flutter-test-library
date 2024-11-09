@@ -36,7 +36,6 @@ class _EmojiSelectionScreenState extends State<EmojiSelectionScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Post Header (Author info and Follow button)
                 ListTile(
                   leading: const CircleAvatar(
                     backgroundImage: AssetImage(
@@ -55,8 +54,6 @@ class _EmojiSelectionScreenState extends State<EmojiSelectionScreen> {
                     child: const Text('Follow'),
                   ),
                 ),
-
-                // Post Content Text
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
