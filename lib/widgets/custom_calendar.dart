@@ -43,7 +43,7 @@ class CustomCalendarState extends State<CustomCalendar> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Date selector", style: TextStyle(fontSize: 16, color: Colors.black)),
+                const DefaultTextStyle(style: TextStyle(fontSize: 16, color: Colors.black), child: Text("Date selector")),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.close),
@@ -82,7 +82,7 @@ class CustomCalendarState extends State<CustomCalendar> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancel", style: TextStyle(fontSize: 14, color: Colors.black)),
+                  child: const DefaultTextStyle(style: TextStyle(fontSize: 14, color: Colors.black), child: Text("Cancel")),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
@@ -94,7 +94,7 @@ class CustomCalendarState extends State<CustomCalendar> {
                     DateTime selectedDate = DateTime(selectedYear, selectedMonth + 1, selectedDay);
                     Navigator.pop(context, selectedDate);
                   },
-                  child: const Text("Set date", style: TextStyle(fontSize: 14, color: Colors.black)),
+                  child: const DefaultTextStyle(style: TextStyle(fontSize: 14, color: Colors.black), child: Text("Set date")),
                 ),
               ],
             ),
@@ -123,12 +123,14 @@ class CustomCalendarState extends State<CustomCalendar> {
             final item = items[index];
             final isSelected = item == selectedItem;
             return Center(
-              child: Text(
-                "$item",
+              child: DefaultTextStyle(
                 style: TextStyle(
                   fontSize: isSelected ? 20 : 16,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   color: isSelected ? Colors.black : Colors.grey,
+                ),
+                child: Text(
+                  "$item",
                 ),
               ),
             );

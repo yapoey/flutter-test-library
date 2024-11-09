@@ -34,7 +34,7 @@ class DatePickerScreenState extends State<DatePickerScreen> {
               onTap: () async{
                 DateTime? selectedDate =  await showCustomCalendar(context: context);
                 if(selectedDate != null){
-                  _dateController.text = "${selectedDate.day} ${selectedDate.month} ${selectedDate.year}";
+                  _dateController.text = "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
                 }
               },
             ),
